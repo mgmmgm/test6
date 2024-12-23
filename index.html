@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=(), xr-spatial-tracking, gamepad, camera">
+    <title>AR Web Application</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        .camera-button {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .frame {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border: 4px solid;
+            border-image: linear-gradient(45deg, #ff0000, #00ff00, #0000ff) 1;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .credit-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 12px 24px;
+            background-color: lightblue;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .arjs-loader div {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+        }
+    </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <div class="arjs-loader">
+        <div>Loading, please wait...</div>
+    </div>
+    
+    <button id="startCamera" class="camera-button">Allow Camera</button>
+    <div class="frame"></div>
+    <button class="credit-button">Made by Moshe Golan</button>
+
+    <a-scene 
+        embedded
+        arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;"
+        renderer="logarithmicDepthBuffer: true; precision: lowp; antialias: true; alpha: true;"
+        vr-mode-ui="enabled: false"
+    >
+        <a-marker type="pattern" url="trigger1.patt">
+            <a-image src="model1.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger2.patt">
+            <a-image src="model2.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger3.patt">
+            <a-image src="model3.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger4.patt">
+            <a-image src="model4.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger5.patt">
+            <a-image src="model5.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger6.patt">
+            <a-image src="model6.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger7.patt">
+            <a-image src="model7.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger8.patt">
+            <a-image src="model8.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger9.patt">
+            <a-image src="model9.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+        <a-marker type="pattern" url="trigger10.patt">
+            <a-image src="model10.png" position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-image>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // Check if running on HTTPS or localhost
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            alert('AR.js requires HTTPS or localhost to access camera features');
+        }
+
+        const startButton = document.getElementById('startCamera');
+        const loader = document.querySelector('.arjs-loader');
+        const scene = document.querySelector('a-scene');
+
+        // Show loader when starting camera
+        startButton.addEventListener('click', function() {
+            loader.style.display = 'flex';
+            
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment'
+                },
+                audio: false 
+            })
+            .then((stream) => {
+                startButton.style.display = 'none';
+                // Hide loader after a short delay to ensure camera is ready
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 1000);
+            })
+            .catch((err) => {
+                console.error('Error accessing camera:', err);
+                alert('Error accessing camera. Please ensure camera permissions are granted.');
+                loader.style.display = 'none';
+            });
+        });
+
+        // Handle scene loaded event
+        scene.addEventListener('loaded', function () {
+            console.log('AR Scene loaded');
+        });
+
+        // Handle camera stream loaded
+        scene.addEventListener('camera-init', function() {
+            console.log('Camera stream initialized');
+        });
+
+        // Handle errors
+        scene.addEventListener('camera-error', function(err) {
+            console.error('Camera error:', err);
+            loader.style.display = 'none';
+            alert('Camera error occurred. Please refresh the page and try again.');
+        });
+    </script>
+</body>
+</html>
